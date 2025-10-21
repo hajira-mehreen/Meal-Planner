@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Meal Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        nav {
+            background: #ffffff;
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2d6a4f;
+            padding: 18px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 24px;
+            color: #495057;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+
+        .nav-links li a:hover {
+            background: #f8f9fa;
+            color: #2d6a4f;
+        }
+
+        .nav-links li a.active {
+            color: #2d6a4f;
+            border-bottom-color: #2d6a4f;
+            background: #f8f9fa;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #2d6a4f;
+            transition: all 0.3s;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            flex: 1;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 60px 30px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+            border-radius: 16px;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* Highlight Cards */
+        .highlight-section {
+            margin-bottom: 40px;
+        }
+
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .highlight-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px 24px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #2d6a4f;
+        }
+
+        .highlight-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .highlight-card h3 {
+            color: #212529;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .highlight-card p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef;
+        }
+
+        .search-controls {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 13px 18px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            color: #212529;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        button {
+            padding: 13px 28px;
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            background: #1b4332;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 106, 79, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f1f3f5;
+            border-top: 3px solid #2d6a4f;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Categories Section */
+        .categories-section {
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            color: #212529;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .category-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-image {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            color: white;
+            position: relative;
+        }
+
+        .category-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .category-info h3 {
+            color: #2d6a4f;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .category-info p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .meals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .meal-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            border-color: #2d6a4f;
+        }
+
+        .meal-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .meal-content {
+            padding: 20px;
+        }
+
+        .meal-title {
+            font-size: 1.25rem;
+            color: #212529;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .meal-info {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .info-badge {
+            background: #e9ecef;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+
+        .meal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .btn-small {
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            background: white;
+            border: 1px solid #dee2e6;
+            color: #495057;
+        }
+
+        .btn-small:hover {
+            background: #f8f9fa;
+            border-color: #2d6a4f;
+            color: #2d6a4f;
+        }
+
+        /* Statistics Section */
+        .stats-section {
+            margin-top: 50px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: #2d6a4f;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .stat-content h3 {
+            font-size: 2rem;
+            color: #2d6a4f;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+        }
+
+        .stat-content p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-top: 50px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            color: white;
+        }
+
+        .action-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(45, 106, 79, 0.3);
+        }
+
+        .action-card i {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .action-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .action-card p {
+            font-size: 0.9rem;
+            opacity: 0.95;
+            margin: 0;
+            color: white;
+        }
+
+        /* Weekly Plan */
+        .weekly-plan {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            margin-top: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef;
+        }
+
+        .weekly-plan h2 {
+            color: #212529;
+            margin-bottom: 28px;
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .day-plan {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border-left: 4px solid #2d6a4f;
+        }
+
+        .day-plan h3 {
+            color: #2d6a4f;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .planned-meal {
+            background: white;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .planned-meal span {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .remove-btn:hover {
+            background: #c82333;
+        }
+
+        /* About Page */
+        .about-content {
+            background: white;
+            border-radius: 12px;
+            padding: 45px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef;
+        }
+
+        .about-content h2 {
+            color: #2d6a4f;
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+
+        .about-content p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-color: #2d6a4f;
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: #2d6a4f;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            color: #212529;
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .feature-card p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Contact Page */
+        .contact-content {
+            background: white;
+            border-radius: 12px;
+            padding: 45px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .contact-content h2 {
+            color: #2d6a4f;
+            font-size: 2.5rem;
+            margin-bottom: 35px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .form-group label {
+            color: #495057;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 13px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            color: #212529;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .submit-btn a{
+            text-decoration: none;
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid #e9ecef;
+            padding: 20px 30px;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-content p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #2d6a4f;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            gap: 20px;
+        }
+
+        .modal-header h2 {
+            color: #2d6a4f;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .close-btn {
+            background: #dc3545;
+            width: 35px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.6rem;
+            color: white;
+            transition: all 0.2s;
+            border: none;
+            padding: 0;
+        }
+
+        .close-btn:hover {
+            background: #c82333;
+            transform: rotate(90deg);
+        }
+
+        .recipe-details {
+            line-height: 1.8;
+            color: #495057;
+        }
+
+        .recipe-details h3 {
+            color: #2d6a4f;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+
+        .recipe-details ul {
+            list-style-position: inside;
+            color: #495057;
+        }
+
+        .recipe-details li {
+            padding: 6px 0;
+        }
+
+        .recipe-details img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        .error {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Day Selector Modal */
+        .day-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1001;
+            overflow-y: auto;
+        }
+
+        .day-modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 100px auto;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .day-modal h3 {
+            color: #2d6a4f;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .day-buttons {
+            display: grid;
+            gap: 10px;
+        }
+
+        .day-btn {
+            width: 100%;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            color: #212529;
+            text-align: left;
+        }
+
+        .day-btn:hover {
+            background: #2d6a4f;
+            color: white;
+            border-color: #2d6a4f;
+        }
+
+        @media (max-width: 992px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                gap: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .nav-links.active {
+                max-height: 400px;
+            }
+
+            .nav-links li a {
+                padding: 16px 30px;
+                border-bottom: 1px solid #f8f9fa;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .highlight-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .meals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .modal-content,
+            .day-modal-content {
+                margin: 20px;
+                padding: 25px;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding: 0 20px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .hero {
+                padding: 40px 20px;
+            }
+
+            .search-section,
+            .about-content,
+            .contact-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                MealPlanner
+            </div>
+            <div class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link active" onclick="showPage(event, 'home')">
+                        <i class="fas fa-home"></i> Home
+                    </a></li>
+                <li><a href="#" class="nav-link" onclick="showPage(event, 'about')">
+                        <i class="fas fa-info-circle"></i> About
+                    </a></li>
+                <li><a href="#" class="nav-link" onclick="showPage(event, 'planner')">
+                        <i class="fas fa-calendar-alt"></i> My Planner
+                    </a></li>
+                <li><a href="#" class="nav-link" onclick="showPage(event, 'contact')">
+                        <i class="fas fa-envelope"></i> Contact
+                    </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>Smart Meal Planner</h1>
+                <p>Discover delicious recipes from around the world and plan your weekly meals effortlessly</p>
+            </div>
+
+            <!-- Feature Highlight Cards -->
+            <div class="highlight-section">
+                <div class="highlight-grid">
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Save Time</h3>
+                        <p>Plan your meals in minutes, not hours</p>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-globe-americas"></i>
+                        </div>
+                        <h3>World Cuisines</h3>
+                        <p>Explore recipes from 15+ countries</p>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Healthy Eating</h3>
+                        <p>Make nutritious choices easier</p>
+                    </div>
+                    <div class="highlight-card">
+                        <div class="highlight-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>On The Go</h3>
+                        <p>Access your plans anywhere</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-section">
+                <div class="search-controls">
+                    <input type="text" id="searchInput" placeholder="Search for meals (e.g., pasta, chicken, salad)">
+                    <button onclick="searchMeals()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button onclick="getRandomMeals()">
+                        <i class="fas fa-random"></i> Random Ideas
+                    </button>
+                </div>
+                <div class="filters">
+                    <select id="categoryFilter" onchange="filterByCategory()">
+                        <option value="">All Categories</option>
+                        <option value="Seafood">Seafood</option>
+                        <option value="Chicken">Chicken</option>
+                        <option value="Beef">Beef</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Dessert">Dessert</option>
+                        <option value="Pasta">Pasta</option>
+                        <option value="Breakfast">Breakfast</option>
+                    </select>
+                    <select id="areaFilter" onchange="filterByArea()">
+                        <option value="">All Cuisines</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Indian">Indian</option>
+                        <option value="American">American</option>
+                        <option value="French">French</option>
+                        <option value="Japanese">Japanese</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="loading" class="loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading delicious meals...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;"></div>
+
+            <div id="mealsGrid" class="meals-grid"></div>
+
+            <!-- Quick Actions Cards -->
+            <div class="quick-actions">
+                <h2 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
+                <div class="actions-grid">
+                    <div class="action-card" onclick="getRandomMeals()">
+                        <i class="fas fa-random"></i>
+                        <h3>Random Recipes</h3>
+                        <p>Discover new meal ideas</p>
+                    </div>
+                    <div class="action-card" onclick="selectCategory('Vegetarian')">
+                        <i class="fas fa-leaf"></i>
+                        <h3>Vegetarian Meals</h3>
+                        <p>Browse healthy options</p>
+                    </div>
+                    <div class="action-card" onclick="selectCategory('Dessert')">
+                        <i class="fas fa-ice-cream"></i>
+                        <h3>Desserts</h3>
+                        <p>Sweet treats & more</p>
+                    </div>
+                    <div class="action-card" onclick="showPage(event, 'planner')">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>View My Plan</h3>
+                        <p>Check weekly schedule</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Categories Cards -->
+        <div class="categories-section">
+            <h2 class="section-title"><i class="fas fa-fire"></i> Popular Categories</h2>
+            <div class="categories-grid">
+                <div class="category-card" onclick="selectCategory('Breakfast')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400') center/cover;">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Breakfast</h3>
+                        <p>Start your day right</p>
+                    </div>
+                </div>
+                <div class="category-card" onclick="selectCategory('Seafood')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1559737558-2f5a2f3e3f8e?w=400') center/cover;">
+                        <i class="fas fa-fish"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Seafood</h3>
+                        <p>Fresh ocean delights</p>
+                    </div>
+                </div>
+                <div class="category-card" onclick="selectCategory('Chicken')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400') center/cover;">
+                        <i class="fas fa-drumstick-bite"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Chicken</h3>
+                        <p>Versatile & delicious</p>
+                    </div>
+                </div>
+                <div class="category-card" onclick="selectCategory('Vegetarian')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1540914124281-342587941389?w=400') center/cover;">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Vegetarian</h3>
+                        <p>Plant-based goodness</p>
+                    </div>
+                </div>
+                <div class="category-card" onclick="selectCategory('Pasta')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400') center/cover;">
+                        <i class="fas fa-pizza-slice"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Pasta</h3>
+                        <p>Italian comfort food</p>
+                    </div>
+                </div>
+                <div class="category-card" onclick="selectCategory('Dessert')">
+                    <div class="category-image"
+                        style="background: linear-gradient(135deg, rgba(45, 106, 79, 0.9), rgba(64, 145, 108, 0.9)), url('https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400') center/cover;">
+                        <i class="fas fa-birthday-cake"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>Dessert</h3>
+                        <p>Sweet indulgences</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-section">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Your Meal Planning Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalMeals">0</h3>
+                        <p>Meals Planned</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="daysPlanned">0</h3>
+                        <p>Days Covered</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="recipesViewed">0</h3>
+                        <p>Recipes Viewed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>12</h3>
+                        <p>Categories</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- About Page -->
+        <div id="about" class="page">
+            <div class="about-content">
+                <h2>About MealPlanner</h2>
+                <p>Welcome to MealPlanner, your ultimate companion for discovering delicious recipes and organizing your
+                    weekly meals. We believe that meal planning should be simple, enjoyable, and inspiring.</p>
+
+                <p>Our platform uses TheMealDB API to bring you thousands of recipes from cuisines around the world.
+                    Whether you're looking for quick weeknight dinners, elaborate weekend projects, or dietary-specific
+                    meals, we've got you covered.</p>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-search"></i>
+                        <h3>Smart Search</h3>
+                        <p>Find recipes by ingredients, dish names, or cuisine type with our powerful search engine.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-filter"></i>
+                        <h3>Advanced Filters</h3>
+                        <p>Filter meals by category, cuisine, dietary preferences, and more to find exactly what you
+                            need.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-calendar-check"></i>
+                        <h3>Weekly Planning</h3>
+                        <p>Organize your meals for the entire week with our intuitive meal planning system.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Detailed Recipes</h3>
+                        <p>Access complete recipes with ingredients, measurements, and step-by-step instructions.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-random"></i>
+                        <h3>Recipe Discovery</h3>
+                        <p>Get inspired with random meal suggestions when you're not sure what to cook.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-globe"></i>
+                        <h3>Global Cuisine</h3>
+                        <p>Explore recipes from Italian, Mexican, Chinese, Indian, and many other cuisines.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Planner Page -->
+        <div id="planner" class="page">
+            <div class="weekly-plan">
+                <h2><i class="fas fa-calendar-week"></i> My Weekly Meal Plan</h2>
+                <div id="weeklyPlan"></div>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contact" class="page">
+            <div class="contact-content">
+                <h2>Get In Touch</h2>
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Name</label>
+                        <input type="text" placeholder="Your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Subject</label>
+                        <input type="text" placeholder="What's this about?" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> Message</label>
+                        <textarea placeholder="Your message here..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=hajimehr1308@gmail.com"
+                            target="_blank">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </a>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 MealPlanner. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=hajimehr1308@gmail.com"
+                            target="_blank"><i class="fas fa-envelope"></i> Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Recipe Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="close-btn" onclick="closeModal()">x</button>
+            </div>
+            <div id="modalBody" class="recipe-details"></div>
+        </div>
+    </div>
+
+    <!-- Day Selector Modal -->
+    <div id="dayModal" class="day-modal">
+        <div class="day-modal-content">
+            <h3><i class="fas fa-calendar-plus"></i> Select a Day</h3>
+            <p id="selectedMealName" style="margin-bottom: 20px; color: #6c757d;"></p>
+            <div class="day-buttons" id="dayButtons"></div>
+        </div>
+    </div>
+
+    <script>
+        // API URL 
+        const API_URL = 'https://www.themealdb.com/api/json/v1/1';
+
+        let weeklyPlan = {};
+        let currentMealToAdd = null;
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Initialize
+        getRandomMeals();
+        renderWeeklyPlan();
+        updateStats();
+
+        function showPage(event, pageId) {
+            event.preventDefault();
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+            event.target.closest('.nav-link').classList.add('active');
+
+            document.querySelector('.nav-links').classList.remove('active');
+        }
+
+        function toggleMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+
+        function selectCategory(category) {
+            document.getElementById('categoryFilter').value = category;
+            filterByCategory();
+        }
+
+        async function searchMeals() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showError('Please enter a search term');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+
+            try {
+                const response = await fetch(`${API_URL}/search.php?s=${query}`);
+                const data = await response.json();
+
+                if (data.meals) {
+                    displayMeals(data.meals);
+                } else {
+                    showError('No meals found. Try a different search term.');
+                }
+            } catch (error) {
+                showError('Failed to fetch meals. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function getRandomMeals() {
+            showLoading(true);
+            hideError();
+
+            try {
+                const promises = Array(12).fill().map(() =>
+                    fetch(`${API_URL}/random.php`).then(r => r.json())
+                );
+                const results = await Promise.all(promises);
+                const meals = results.map(r => r.meals[0]);
+                displayMeals(meals);
+            } catch (error) {
+                showError('Failed to fetch random meals. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function filterByCategory() {
+            const category = document.getElementById('categoryFilter').value;
+            if (!category) return;
+
+            showLoading(true);
+            hideError();
+
+            try {
+                const response = await fetch(`${API_URL}/filter.php?c=${category}`);
+                const data = await response.json();
+
+                if (data.meals) {
+                    const detailedMeals = await Promise.all(
+                        data.meals.slice(0, 12).map(meal =>
+                            fetch(`${API_URL}/lookup.php?i=${meal.idMeal}`).then(r => r.json())
+                        )
+                    );
+                    displayMeals(detailedMeals.map(d => d.meals[0]));
+                } else {
+                    showError('No meals found in this category.');
+                }
+            } catch (error) {
+                showError('Failed to filter meals. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function filterByArea() {
+            const area = document.getElementById('areaFilter').value;
+            if (!area) return;
+
+            showLoading(true);
+            hideError();
+
+            try {
+                const response = await fetch(`${API_URL}/filter.php?a=${area}`);
+                const data = await response.json();
+
+                if (data.meals) {
+                    const detailedMeals = await Promise.all(
+                        data.meals.slice(0, 12).map(meal =>
+                            fetch(`${API_URL}/lookup.php?i=${meal.idMeal}`).then(r => r.json())
+                        )
+                    );
+                    displayMeals(detailedMeals.map(d => d.meals[0]));
+                } else {
+                    showError('No meals found for this cuisine.');
+                }
+            } catch (error) {
+                showError('Failed to filter meals. Please try again.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayMeals(meals) {
+            const grid = document.getElementById('mealsGrid');
+            grid.innerHTML = meals.map(meal => `
+                <div class="meal-card">
+                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="meal-image">
+                    <div class="meal-content">
+                        <h3 class="meal-title">${meal.strMeal}</h3>
+                        <div class="meal-info">
+                            <span class="info-badge"><i class="fas fa-tag"></i> ${meal.strCategory || 'N/A'}</span>
+                            <span class="info-badge"><i class="fas fa-map-marker-alt"></i> ${meal.strArea || 'N/A'}</span>
+                        </div>
+                        <div class="meal-actions">
+                            <button class="btn-small" onclick="viewRecipe('${meal.idMeal}')">
+                                <i class="fas fa-book-open"></i> View
+                            </button>
+                            <button class="btn-small" onclick="openDaySelector('${meal.idMeal}', '${meal.strMeal.replace(/'/g, "\\'")}', '${meal.strMealThumb}')">
+                                <i class="fas fa-plus"></i> Add to Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function viewRecipe(id) {
+            const recipesViewed = parseInt(document.getElementById('recipesViewed').textContent) + 1;
+            document.getElementById('recipesViewed').textContent = recipesViewed;
+
+            try {
+                const response = await fetch(`${API_URL}/lookup.php?i=${id}`);
+                const data = await response.json();
+                const meal = data.meals[0];
+
+                const ingredients = [];
+                for (let i = 1; i <= 20; i++) {
+                    if (meal[`strIngredient${i}`]) {
+                        ingredients.push(`${meal[`strIngredient${i}`]} - ${meal[`strMeasure${i}`]}`);
+                    }
+                }
+
+                document.getElementById('modalTitle').textContent = meal.strMeal;
+                document.getElementById('modalBody').innerHTML = `
+                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
+                    <p><strong>Category:</strong> ${meal.strCategory}</p>
+                    <p><strong>Cuisine:</strong> ${meal.strArea}</p>
+                    
+                    <h3><i class="fas fa-shopping-basket"></i> Ingredients</h3>
+                    <ul>
+                        ${ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                    </ul>
+                    
+                    <h3><i class="fas fa-list-ol"></i> Instructions</h3>
+                    <p>${meal.strInstructions}</p>
+                    
+                    ${meal.strYoutube ? `<h3><i class="fas fa-video"></i> Video Tutorial</h3>
+                    <a href="${meal.strYoutube}" target="_blank" style="color: #2d6a4f; text-decoration: none; font-weight: 600;">
+                        <i class="fab fa-youtube"></i> Watch on YouTube
+                    </a>` : ''}
+                `;
+
+                document.getElementById('modal').style.display = 'block';
+            } catch (error) {
+                showError('Failed to load recipe details.');
+            }
+        }
+
+        function openDaySelector(id, name, image) {
+            currentMealToAdd = { id, name, image };
+            document.getElementById('selectedMealName').textContent = `Adding: ${name}`;
+
+            const dayButtons = document.getElementById('dayButtons');
+            dayButtons.innerHTML = days.map((day, index) => `
+                <button class="day-btn" onclick="addToPlan('${day}')">
+                    <i class="fas fa-calendar-day"></i> ${day}
+                </button>
+            `).join('');
+
+            document.getElementById('dayModal').style.display = 'block';
+        }
+
+        function addToPlan(day) {
+            if (!currentMealToAdd) return;
+
+            if (!weeklyPlan[day]) {
+                weeklyPlan[day] = [];
+            }
+            weeklyPlan[day].push(currentMealToAdd);
+
+            document.getElementById('dayModal').style.display = 'none';
+            currentMealToAdd = null;
+
+            renderWeeklyPlan();
+            updateStats();
+
+            // Show success message
+            const oldError = document.getElementById('error').style.display;
+            showError(`* ${currentMealToAdd ? currentMealToAdd.name : 'Meal'} added to ${day}!`);
+            document.getElementById('error').style.background = '#d4edda';
+            document.getElementById('error').style.borderColor = '#c3e6cb';
+            document.getElementById('error').style.color = '#155724';
+
+            setTimeout(() => {
+                hideError();
+            }, 3000);
+        }
+
+        function renderWeeklyPlan() {
+            const planDiv = document.getElementById('weeklyPlan');
+
+            if (Object.keys(weeklyPlan).length === 0) {
+                planDiv.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 40px;">No meals planned yet. Start adding meals to your weekly plan!</p>';
+                return;
+            }
+
+            planDiv.innerHTML = days.map(day => {
+                const meals = weeklyPlan[day] || [];
+                return `
+                    <div class="day-plan">
+                        <h3><i class="fas fa-calendar-day"></i> ${day}</h3>
+                        ${meals.length > 0 ? meals.map((meal, idx) => `
+                            <div class="planned-meal">
+                                <span><i class="fas fa-utensils"></i> ${meal.name}</span>
+                                <button class="remove-btn" onclick="removeMeal('${day}', ${idx})">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        `).join('') : '<p style="color: #6c757d;">No meals planned</p>'}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function removeMeal(day, index) {
+            weeklyPlan[day].splice(index, 1);
+            if (weeklyPlan[day].length === 0) {
+                delete weeklyPlan[day];
+            }
+            renderWeeklyPlan();
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalMeals = Object.values(weeklyPlan).reduce((sum, meals) => sum + meals.length, 0);
+            const daysPlanned = Object.keys(weeklyPlan).length;
+
+            document.getElementById('totalMeals').textContent = totalMeals;
+            document.getElementById('daysPlanned').textContent = daysPlanned;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            errorDiv.style.display = 'flex';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('error').style.background = '#fff3cd';
+            document.getElementById('error').style.borderColor = '#ffc107';
+            document.getElementById('error').style.color = '#856404';
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('Thank you for your message! We will get back to you soon.');
+            event.target.reset();
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function (event) {
+            const modal = document.getElementById('modal');
+            const dayModal = document.getElementById('dayModal');
+
+            if (event.target === modal) {
+                closeModal();
+            }
+            if (event.target === dayModal) {
+                dayModal.style.display = 'none';
+                currentMealToAdd = null;
+            }
+        }
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchMeals();
+            }
+        });
+    </script>
+</body>
+
+</html>
